@@ -1,0 +1,38 @@
+import java.util.Vector;
+
+
+public class ThreadCoordinator{
+	private Vector<BedsideMonitor> bedsides;
+	private int index = 0;
+	
+	public ThreadCoordinator(Vector<BedsideMonitor> bedsides){
+		this.bedsides = bedsides;
+	}
+	
+	public synchronized BedsideMonitor getNext(){
+		BedsideMonitor monitor = null;
+		if(bedsides.size() > 0){
+			monitor = bedsides.get(index);
+			index++;
+		}
+		if(index >= bedsides.size()){
+			index = 0;
+		}
+		return monitor;
+	}
+	
+	public synchronized BedsideMonitor find(NetworkConnection net){
+		String host = net.getRemoteHost();
+		for(int i = 0; i < bedsides.size(); i++){
+			if(bedsides.get(i).getNetworkConnection().getRemoteHost().equalsIgnoreCase(host)){
+				return bedsides.get(i);
+			}
+		}
+		return null;
+	}
+	
+	public void remove(BedsideMonitor mon){
+		bedsides.remove(mon);
+	}
+
+}
